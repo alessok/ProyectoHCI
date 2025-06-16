@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../services/session_service.dart';
-import 'home_screen_new.dart'; // Cambio a la nueva pantalla
+import 'home_screen.dart'; // Cambio a la pantalla consolidada
 import 'search_screen.dart';
 import 'ranking_screen.dart';
 import 'favorite_professors_screen.dart';
@@ -19,7 +19,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
   List<Widget> get _screens => [
-    HomeScreenNew(
+    HomeScreen(
       onSearchTap: () {
         setState(() {
           _currentIndex = 1; // Navegar al tab de búsqueda

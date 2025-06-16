@@ -1,5 +1,6 @@
 import '../models/professor.dart';
 import '../models/user.dart';
+import '../models/review.dart';
 
 /// Servicio que proporciona datos falsos para desarrollo y testing
 class MockDataService {
@@ -449,23 +450,4 @@ class MockDataService {
       );
     }
   }
-}
-
-/// Clase para representar una reseña
-class Review {
-  final String id;
-  final String userId;
-  final String userName;
-  final int rating;
-  final String comment;
-  final DateTime date;
-
-  Review({
-    required this.id,
-    required this.userId,
-    required this.userName,
-    required this.rating,
-    required this.comment,
-    required this.date,
-  });
 }

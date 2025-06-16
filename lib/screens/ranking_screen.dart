@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../models/professor.dart';
 import '../services/mock_data_service.dart';
+import '../widgets/professor_card_variants.dart';
 import 'professor_profile_screen.dart';
 
 /// Pantalla de ranking de profesores
@@ -175,7 +176,7 @@ class _RankingScreenState extends State<RankingScreen> {
                   final professor = _professors[index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
-                    child: _RankingCard(
+                    child: RankingProfessorCard(
                       professor: professor,
                       position: index + 1,
                       onTap: () {
@@ -195,181 +196,6 @@ class _RankingScreenState extends State<RankingScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Widget para mostrar cada profesor en el ranking
-class _RankingCard extends StatelessWidget {
-  final Professor professor;
-  final int position;
-  final VoidCallback onTap;
-
-  const _RankingCard({
-    required this.professor,
-    required this.position,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: _getBorder(),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Posición y medalla
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: _getPositionColor(),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: _getPositionWidget(),
-              ),
-            ),
-            
-            const SizedBox(width: 16),
-            
-            // Información del profesor
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    professor.name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    professor.department,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.star,
-                        color: AppColors.star,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        professor.averageRating.toStringAsFixed(1),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Icon(
-                        Icons.chat_bubble_outline,
-                        color: AppColors.mediumGray,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${professor.totalReviews} reseñas',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            
-            // Flecha
-            const Icon(
-              Icons.arrow_forward_ios,
-              color: AppColors.mediumGray,
-              size: 16,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Border? _getBorder() {
-    if (position <= 3) {
-      return Border.all(
-        color: _getPositionColor(),
-        width: 2,
-      );
-    }
-    return null;
-  }
-
-  Color _getPositionColor() {
-    switch (position) {
-      case 1:
-        return const Color(0xFFFFD700); // Oro
-      case 2:
-        return const Color(0xFFC0C0C0); // Plata
-      case 3:
-        return const Color(0xFFCD7F32); // Bronce
-      default:
-        return AppColors.primaryOrange;
-    }
-  }
-
-  Widget _getPositionWidget() {
-    if (position <= 3) {
-      String emoji;
-      switch (position) {
-        case 1:
-          emoji = '🥇';
-          break;
-        case 2:
-          emoji = '🥈';
-          break;
-        case 3:
-          emoji = '🥉';
-          break;
-        default:
-          emoji = position.toString();
-      }
-      return Text(
-        emoji,
-        style: const TextStyle(
-          fontSize: 20,
-        ),
-      );
-    }
-    
-    return Text(
-      position.toString(),
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
       ),
     );
   }

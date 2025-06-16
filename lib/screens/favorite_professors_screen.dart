@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../models/professor.dart';
 import '../services/mock_data_service.dart';
-import '../widgets/professor_card.dart';
+import '../widgets/professor_card_variants.dart';
 import 'professor_profile_screen.dart';
 
 /// Pantalla que muestra los profesores favoritos del usuario
@@ -143,7 +143,7 @@ class _FavoriteProfessorsScreenState extends State<FavoriteProfessorsScreen> {
                       itemCount: _favoriteProfessors.length,
                       itemBuilder: (context, index) {
                         final professor = _favoriteProfessors[index];
-                        return ProfessorCard(
+                        return ProfessorGridCard(
                           professor: professor,
                           onTap: () {
                             Navigator.push(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_navigation_screen.dart';
 import 'screens/register_screen.dart';
@@ -6,6 +7,8 @@ import 'screens/search_screen.dart';
 import 'screens/rating_completed_screen.dart';
 import 'constants/colors.dart';
 import 'constants/strings.dart';
+import 'core/providers/professor_provider.dart';
+import 'core/repositories/mock_professor_repository.dart';
 
 void main() {
   runApp(const ProfessorRankingApp());
@@ -17,17 +20,23 @@ class ProfessorRankingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppStrings.appTitle,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        // Tema personalizado con colores de la Universidad de Lima
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primaryOrange,
-          primary: AppColors.primaryOrange,
-          secondary: AppColors.primaryGold,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ProfessorProvider(MockProfessorRepository()),
         ),
-        useMaterial3: true,
+      ],
+      child: MaterialApp(
+        title: AppStrings.appTitle,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          // Tema personalizado con colores de la Universidad de Lima
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: AppColors.primaryOrange,
+            primary: AppColors.primaryOrange,
+            secondary: AppColors.primaryGold,
+          ),
+          useMaterial3: true,
         
         // Configuración de AppBar
         appBarTheme: const AppBarTheme(
@@ -61,15 +70,16 @@ class ProfessorRankingApp extends StatelessWidget {
           ),
         ),
       ),
-      // Configuración de rutas nombradas
-      routes: {
-        '/': (context) => const LoginScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/main': (context) => const MainNavigationScreen(),
-        '/search': (context) => const SearchScreen(),
-        '/rating-completed': (context) => const RatingCompletedScreen(),
-      },
+        // Configuración de rutas nombradas
+        routes: {
+          '/': (context) => const LoginScreen(),
+          '/login': (context) => const LoginScreen(),
+          '/register': (context) => const RegisterScreen(),
+          '/main': (context) => const MainNavigationScreen(),
+          '/search': (context) => const SearchScreen(),
+          '/rating-completed': (context) => const RatingCompletedScreen(),
+        },
+      ),
     );
   }
 }

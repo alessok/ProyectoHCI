@@ -4,6 +4,7 @@ import '../models/professor.dart';
 import '../services/mock_data_service.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/category_filter.dart';
+import '../widgets/professor_card_variants.dart';
 import 'professor_profile_screen.dart';
 
 /// Pantalla de búsqueda de profesores con filtros
@@ -263,7 +264,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         final professor = _filteredProfessors[index];
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
-                          child: _ProfessorSearchCard(
+                          child: ProfessorListCard(
                             professor: professor,
                             onTap: () {
                               Navigator.push(
@@ -275,6 +276,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ),
                               );
                             },
+                            trailing: const Icon(
+                              Icons.more_horiz,
+                              color: AppColors.mediumGray,
+                            ),
                           ),
                         );
                       },
@@ -282,136 +287,6 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Widget personalizado para las tarjetas de profesores en búsqueda
-class _ProfessorSearchCard extends StatelessWidget {
-  final Professor professor;
-  final VoidCallback onTap;
-
-  const _ProfessorSearchCard({
-    required this.professor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Avatar del profesor
-            Container(
-              width: 60,
-              height: 60,
-              decoration: const BoxDecoration(
-                color: AppColors.lightGray,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.person,
-                color: AppColors.mediumGray,
-                size: 30,
-              ),
-            ),
-            
-            const SizedBox(width: 16),
-            
-            // Información del profesor
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Nombre del profesor
-                  Text(
-                    professor.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 4),
-                  
-                  // Departamento
-                  Text(
-                    professor.department,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Rating y menú
-            Column(
-              children: [
-                // Menú de opciones
-                IconButton(
-                  onPressed: () {
-                    // TODO: Mostrar opciones del profesor
-                  },
-                  icon: const Icon(
-                    Icons.more_horiz,
-                    color: AppColors.mediumGray,
-                  ),
-                ),
-                
-                const SizedBox(height: 8),
-                
-                // Rating con estrella
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.star,
-                      color: AppColors.star,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      professor.averageRating.toStringAsFixed(1),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-                
-                // Número de reseñas
-                Text(
-                  '(${professor.totalReviews} reviews)',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
