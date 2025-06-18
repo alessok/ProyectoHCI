@@ -30,6 +30,17 @@ Se ha implementado exitosamente el **Sistema de Filtros y Ordenamientos Avanzado
 - [x] Estados visuales diferenciados
 - [x] Responsive y scrollable
 
+### ✅ **Base de Datos Expandida**
+- [x] 100 profesores de Ingeniería de Sistemas
+- [x] 68 profesores de Derecho
+- [x] 95 profesores de Arquitectura
+- [x] Total: **263 profesores** en la base de datos
+
+### ✅ **Mejoras en Visualización de Nombres**
+- [x] Implementado `formattedName` getter en Professor model
+- [x] Nombres mostrados como "Nombre Apellido" en lugar de "Apellido Nombre"
+- [x] Actualizado en todas las pantallas y widgets
+
 ---
 
 ## 🔧 **Archivos Implementados**
