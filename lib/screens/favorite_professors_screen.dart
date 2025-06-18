@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants/colors.dart';
-import '../models/professor.dart';
-import '../services/mock_data_service.dart';
 import '../widgets/professor_card_variants.dart';
+import '../core/providers/professor_provider.dart';
 import 'professor_profile_screen.dart';
 
-/// Pantalla que muestra los profesores favoritos del usuario
+/// Pantalla que muestra los profesores favoritos del usuario integrada con Provider
 class FavoriteProfessorsScreen extends StatefulWidget {
   const FavoriteProfessorsScreen({super.key});
 
@@ -14,18 +14,13 @@ class FavoriteProfessorsScreen extends StatefulWidget {
 }
 
 class _FavoriteProfessorsScreenState extends State<FavoriteProfessorsScreen> {
-  List<Professor> _favoriteProfessors = [];
-
   @override
   void initState() {
     super.initState();
-    _loadFavoriteProfessors();
-  }
-
-  void _loadFavoriteProfessors() {
-    setState(() {
-      // Obtener profesores favoritos (los mejor calificados por ahora)
-      _favoriteProfessors = MockDataService.getFavoriteProfessors(limit: 10);
+    // Cargar profesores favoritos usando el provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<ProfessorProvider>(context, listen: false);
+      provider.loadProfessorsByCategory('All');
     });
   }
 
@@ -56,7 +51,7 @@ class _FavoriteProfessorsScreenState extends State<FavoriteProfessorsScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -86,82 +81,110 @@ class _FavoriteProfessorsScreenState extends State<FavoriteProfessorsScreen> {
               ),
             ),
             
-            // Contenido principal
+            // Contenido principal usando Consumer
             Expanded(
-              child: _favoriteProfessors.isEmpty
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.favorite_border,
-                    size: 64,
-                    color: AppColors.mediumGray,
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'No tienes profesores favoritos aún',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Agrega profesores a favoritos desde sus perfiles',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.mediumGray,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Tienes ${_favoriteProfessors.length} profesores favoritos',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.8,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
+              child: Consumer<ProfessorProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryOrange,
                       ),
-                      itemCount: _favoriteProfessors.length,
-                      itemBuilder: (context, index) {
-                        final professor = _favoriteProfessors[index];
-                        return ProfessorGridCard(
-                          professor: professor,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProfessorProfileScreen(
-                                  professor: professor,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
+                    );
+                  }
+
+                  if (provider.errorMessage != null) {
+                    return Center(
+                      child: Text(
+                        provider.errorMessage!,
+                        style: const TextStyle(
+                          color: AppColors.error,
+                          fontSize: 16,
+                        ),
+                      ),
+                    );
+                  }
+
+                  final favoriteProfessors = provider.favoriteProfessors;
+
+                  if (favoriteProfessors.isEmpty) {
+                    return const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.favorite_border,
+                            size: 64,
+                            color: AppColors.mediumGray,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'No tienes profesores favoritos aún',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Agrega profesores a favoritos desde sus perfiles',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.mediumGray,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Tienes ${favoriteProfessors.length} profesores favoritos',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: GridView.builder(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.8,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
+                            itemCount: favoriteProfessors.length,
+                            itemBuilder: (context, index) {
+                              final professor = favoriteProfessors[index];
+                              return ProfessorGridCard(
+                                professor: professor,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProfessorProfileScreen(
+                                        professor: professor,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
-            ),
             ),
           ],
         ),

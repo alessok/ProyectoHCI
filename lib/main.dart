@@ -23,7 +23,14 @@ class ProfessorRankingApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => ProfessorProvider(MockProfessorRepository()),
+          create: (context) {
+            final provider = ProfessorProvider(MockProfessorRepository());
+            // Precargar datos para mejor performance
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              provider.preloadData();
+            });
+            return provider;
+          },
         ),
       ],
       child: MaterialApp(

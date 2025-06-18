@@ -334,7 +334,7 @@ class MockDataService {
 
   /// Busca profesores por nombre o departamento
   static List<Professor> searchProfessors(String query) {
-    if (query.isEmpty) return getAllProfessors();
+    if (query.isEmpty) return [];
     
     final lowerQuery = query.toLowerCase();
     return _professors.where((prof) {

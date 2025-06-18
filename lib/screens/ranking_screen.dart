@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants/colors.dart';
 import '../models/professor.dart';
-import '../services/mock_data_service.dart';
 import '../widgets/professor_card_variants.dart';
+import '../core/providers/professor_provider.dart';
 import 'professor_profile_screen.dart';
 
-/// Pantalla de ranking de profesores
+/// Pantalla de ranking de profesores integrada con Provider
 class RankingScreen extends StatefulWidget {
   final bool showBackButton;
   
@@ -16,23 +17,26 @@ class RankingScreen extends StatefulWidget {
 }
 
 class _RankingScreenState extends State<RankingScreen> {
-  List<Professor> _professors = [];
   String _sortBy = 'rating'; // 'rating' o 'reviews'
 
   @override
   void initState() {
     super.initState();
-    _loadProfessors();
+    // Cargar profesores usando el provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<ProfessorProvider>(context, listen: false);
+      provider.loadProfessorsByCategory('All');
+    });
   }
 
-  void _loadProfessors() {
-    setState(() {
-      if (_sortBy == 'rating') {
-        _professors = MockDataService.getFavoriteProfessors(limit: 15);
-      } else {
-        _professors = MockDataService.getTopProfessors(limit: 15);
-      }
-    });
+  List<Professor> _getSortedProfessors(List<Professor> professors) {
+    final sortedList = List<Professor>.from(professors);
+    if (_sortBy == 'rating') {
+      sortedList.sort((a, b) => b.averageRating.compareTo(a.averageRating));
+    } else {
+      sortedList.sort((a, b) => b.totalReviews.compareTo(a.totalReviews));
+    }
+    return sortedList.take(15).toList();
   }
 
   @override
@@ -74,7 +78,7 @@ class _RankingScreenState extends State<RankingScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(
@@ -111,7 +115,7 @@ class _RankingScreenState extends State<RankingScreen> {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -121,7 +125,6 @@ class _RankingScreenState extends State<RankingScreen> {
                               onTap: () {
                                 setState(() {
                                   _sortBy = 'rating';
-                                  _loadProfessors();
                                 });
                               },
                               child: Container(
@@ -150,7 +153,6 @@ class _RankingScreenState extends State<RankingScreen> {
                               onTap: () {
                                 setState(() {
                                   _sortBy = 'reviews';
-                                  _loadProfessors();
                                 });
                               },
                               child: Container(
@@ -182,29 +184,67 @@ class _RankingScreenState extends State<RankingScreen> {
               ),
             ),
             
-            // Lista de ranking
+            // Lista de ranking usando Consumer
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(20.0),
-                itemCount: _professors.length,
-                itemBuilder: (context, index) {
-                  final professor = _professors[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: RankingProfessorCard(
-                      professor: professor,
-                      position: index + 1,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfessorProfileScreen(
-                              professor: professor,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+              child: Consumer<ProfessorProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryOrange,
+                      ),
+                    );
+                  }
+
+                  if (provider.errorMessage != null) {
+                    return Center(
+                      child: Text(
+                        provider.errorMessage!,
+                        style: const TextStyle(
+                          color: AppColors.error,
+                          fontSize: 16,
+                        ),
+                      ),
+                    );
+                  }
+
+                  final sortedProfessors = _getSortedProfessors(provider.professors);
+
+                  if (sortedProfessors.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No hay profesores disponibles',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 16,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(20.0),
+                    itemCount: sortedProfessors.length,
+                    itemBuilder: (context, index) {
+                      final professor = sortedProfessors[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: RankingProfessorCard(
+                          professor: professor,
+                          position: index + 1,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfessorProfileScreen(
+                                  professor: professor,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
                   );
                 },
               ),

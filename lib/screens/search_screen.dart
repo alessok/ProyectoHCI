@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants/colors.dart';
 import '../models/professor.dart';
-import '../services/mock_data_service.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/category_filter.dart';
 import '../widgets/professor_card_variants.dart';
+import '../core/providers/professor_provider.dart';
 import 'professor_profile_screen.dart';
 
-/// Pantalla de búsqueda de profesores con filtros
+/// Pantalla de búsqueda de profesores con filtros integrada con Provider
 class SearchScreen extends StatefulWidget {
   final bool showBackButton;
   
@@ -20,8 +21,6 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   
-  List<Professor> _allProfessors = [];
-  List<Professor> _filteredProfessors = [];
   String _selectedCategory = 'Todo';
   String _searchQuery = '';
 
@@ -38,8 +37,12 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    _loadProfessors();
     _searchController.addListener(_onSearchChanged);
+    // Cargar profesores usando el provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<ProfessorProvider>(context, listen: false);
+      provider.loadProfessorsByCategory('All');
+    });
   }
 
   @override
@@ -49,29 +52,28 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  void _loadProfessors() {
-    setState(() {
-      _allProfessors = MockDataService.getAllProfessors();
-      _filteredProfessors = _allProfessors;
-    });
-  }
-
   void _onSearchChanged() {
     setState(() {
       _searchQuery = _searchController.text;
-      _filterProfessors();
     });
   }
 
   void _onCategoryChanged(String category) {
     setState(() {
       _selectedCategory = category;
-      _filterProfessors();
     });
+    
+    // Cambiar categoría usando el provider
+    final provider = Provider.of<ProfessorProvider>(context, listen: false);
+    if (category == 'Todo') {
+      provider.loadProfessorsByCategory('All');
+    } else {
+      provider.loadProfessorsByCategory(category);
+    }
   }
 
-  void _filterProfessors() {
-    _filteredProfessors = _allProfessors.where((professor) {
+  List<Professor> _getFilteredProfessors(List<Professor> professors) {
+    return professors.where((professor) {
       // Filtro por categoría
       bool categoryMatch = _selectedCategory == 'Todo' || 
           professor.department == _selectedCategory;
@@ -92,8 +94,11 @@ class _SearchScreenState extends State<SearchScreen> {
       _selectedCategory = 'Todo';
       _searchController.clear();
       _searchQuery = '';
-      _filteredProfessors = _allProfessors;
     });
+    
+    // Recargar todos los profesores
+    final provider = Provider.of<ProfessorProvider>(context, listen: false);
+    provider.loadProfessorsByCategory('All');
   }
 
   @override
@@ -133,10 +138,9 @@ class _SearchScreenState extends State<SearchScreen> {
                               }
                             },
                             child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(8),
+                              padding: const EdgeInsets.all(8),                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(
                                 Icons.arrow_back_ios,
@@ -205,8 +209,12 @@ class _SearchScreenState extends State<SearchScreen> {
                   const SizedBox(height: 16),
                   
                   // Filtros de categoría
-                  SizedBox(
+                  Container(
                     height: 50,
+                    constraints: const BoxConstraints(
+                      minHeight: 50,
+                      maxHeight: 50,
+                    ),
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -229,63 +237,102 @@ class _SearchScreenState extends State<SearchScreen> {
                   
                   const SizedBox(height: 20),
                   
-                  // Resultados y botón eliminar filtros
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${_filteredProfessors.length} Resultados',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        if (_selectedCategory != 'Todo' || _searchQuery.isNotEmpty)
-                          TextButton(
-                            onPressed: _clearFilters,
-                            child: const Text(
-                              'Eliminar filtros',
-                              style: TextStyle(
-                                color: AppColors.primaryOrange,
-                                fontWeight: FontWeight.w500,
+                  // Resultados y botón eliminar filtros usando Consumer
+                  Expanded(
+                    child: Consumer<ProfessorProvider>(
+                      builder: (context, provider, child) {
+                        final filteredProfessors = _getFilteredProfessors(provider.professors);
+                        
+                        return Column(
+                          children: [
+                            // Header con resultados y filtros
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '${filteredProfessors.length} Resultados',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  if (_selectedCategory != 'Todo' || _searchQuery.isNotEmpty)
+                                    TextButton(
+                                      onPressed: _clearFilters,
+                                      child: const Text(
+                                        'Eliminar filtros',
+                                        style: TextStyle(
+                                          color: AppColors.primaryOrange,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Lista de profesores
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      itemCount: _filteredProfessors.length,
-                      itemBuilder: (context, index) {
-                        final professor = _filteredProfessors[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: ProfessorListCard(
-                            professor: professor,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProfessorProfileScreen(
-                                    professor: professor,
-                                  ),
-                                ),
-                              );
-                            },
-                            trailing: const Icon(
-                              Icons.more_horiz,
-                              color: AppColors.mediumGray,
+                            
+                            const SizedBox(height: 16),
+                            
+                            // Lista de profesores
+                            Expanded(
+                              child: provider.isLoading
+                                  ? const Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.primaryOrange,
+                                      ),
+                                    )
+                                  : provider.errorMessage != null
+                                      ? Center(
+                                          child: Text(
+                                            provider.errorMessage!,
+                                            style: const TextStyle(
+                                              color: AppColors.error,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        )
+                                      : filteredProfessors.isEmpty
+                                          ? const Center(
+                                              child: Text(
+                                                'No se encontraron profesores',
+                                                style: TextStyle(
+                                                  color: AppColors.textSecondary,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            )
+                                          : ListView.builder(
+                                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                              itemCount: filteredProfessors.length,
+                                              itemBuilder: (context, index) {
+                                                final professor = filteredProfessors[index];
+                                                return Padding(
+                                                  padding: const EdgeInsets.only(bottom: 16.0),
+                                                  child: ProfessorListCard(
+                                                    professor: professor,
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) => ProfessorProfileScreen(
+                                                            professor: professor,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    trailing: const Icon(
+                                                      Icons.more_horiz,
+                                                      color: AppColors.mediumGray,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
                             ),
-                          ),
+                          ],
                         );
                       },
                     ),

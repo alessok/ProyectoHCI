@@ -86,7 +86,9 @@ class ProfessorListCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    professor.courses.join(' • '),
+                    professor.courses.isNotEmpty 
+                        ? professor.courses.join(' • ')
+                        : 'Sin cursos asignados',
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
@@ -114,7 +116,7 @@ class ProfessorListCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        professor.averageRating.toString(),
+                        professor.averageRating.toStringAsFixed(1),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

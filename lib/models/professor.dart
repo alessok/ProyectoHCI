@@ -53,21 +53,24 @@ class Professor {
     String? id,
     String? name,
     String? department,
-    String? photoUrl,
+    Object? photoUrl = _notProvided,
     List<String>? courses,
     double? averageRating,
     int? totalReviews,
-    String? bio,
+    Object? bio = _notProvided,
   }) {
     return Professor(
       id: id ?? this.id,
       name: name ?? this.name,
       department: department ?? this.department,
-      photoUrl: photoUrl ?? this.photoUrl,
+      photoUrl: photoUrl == _notProvided ? this.photoUrl : photoUrl as String?,
       courses: courses ?? this.courses,
       averageRating: averageRating ?? this.averageRating,
       totalReviews: totalReviews ?? this.totalReviews,
-      bio: bio ?? this.bio,
+      bio: bio == _notProvided ? this.bio : bio as String?,
     );
   }
 }
+
+// Objeto centinela para diferenciar entre null y "no proporcionado"
+const Object _notProvided = Object();
