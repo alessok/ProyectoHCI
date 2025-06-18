@@ -7,6 +7,8 @@ import '../widgets/category_filter.dart';
 import '../widgets/professor_card_variants.dart';
 import '../core/providers/professor_provider.dart';
 import 'professor_profile_screen.dart';
+import '../widgets/filter_modal.dart';
+import '../services/filter_service.dart';
 
 /// Pantalla de búsqueda de profesores con filtros integrada con Provider
 class SearchScreen extends StatefulWidget {
@@ -23,6 +25,11 @@ class _SearchScreenState extends State<SearchScreen> {
   
   String _selectedCategory = 'Todo';
   String _searchQuery = '';
+  
+  // Variables para filtros avanzados
+  FilterType _currentFilter = FilterType.all;
+  SortType _currentSort = SortType.rating;
+  bool _isAscending = false;
 
   final List<String> _categories = [
     'Todo',
@@ -73,7 +80,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   List<Professor> _getFilteredProfessors(List<Professor> professors) {
-    return professors.where((professor) {
+    var filteredList = professors.where((professor) {
       // Filtro por categoría
       bool categoryMatch = _selectedCategory == 'Todo' || 
           professor.department == _selectedCategory;
@@ -87,6 +94,14 @@ class _SearchScreenState extends State<SearchScreen> {
       
       return categoryMatch && searchMatch;
     }).toList();
+    
+    // Aplicar filtros avanzados
+    filteredList = FilterService.applyFilters(filteredList, _currentFilter);
+    
+    // Aplicar ordenamiento
+    filteredList = FilterService.sortProfessors(filteredList, _currentSort, ascending: _isAscending);
+    
+    return filteredList;
   }
 
   void _clearFilters() {
@@ -94,11 +109,34 @@ class _SearchScreenState extends State<SearchScreen> {
       _selectedCategory = 'Todo';
       _searchController.clear();
       _searchQuery = '';
+      _currentFilter = FilterType.all;
+      _currentSort = SortType.rating;
+      _isAscending = false;
     });
     
     // Recargar todos los profesores
     final provider = Provider.of<ProfessorProvider>(context, listen: false);
     provider.loadProfessorsByCategory('All');
+  }
+
+  void _showFilterModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => FilterModal(
+        currentFilter: _currentFilter,
+        currentSort: _currentSort,
+        isAscending: _isAscending,
+        onApplyFilters: (filter, sort, ascending) {
+          setState(() {
+            _currentFilter = filter;
+            _currentSort = sort;
+            _isAscending = ascending;
+          });
+        },
+      ),
+    );
   }
 
   @override
@@ -259,17 +297,38 @@ class _SearchScreenState extends State<SearchScreen> {
                                       color: AppColors.textPrimary,
                                     ),
                                   ),
-                                  if (_selectedCategory != 'Todo' || _searchQuery.isNotEmpty)
-                                    TextButton(
-                                      onPressed: _clearFilters,
-                                      child: const Text(
-                                        'Eliminar filtros',
-                                        style: TextStyle(
-                                          color: AppColors.primaryOrange,
-                                          fontWeight: FontWeight.w500,
+                                  Row(
+                                    children: [
+                                      // Botón de filtros avanzados
+                                      IconButton(
+                                        onPressed: _showFilterModal,
+                                        icon: Icon(
+                                          Icons.tune,
+                                          color: (_currentFilter != FilterType.all || 
+                                                 _currentSort != SortType.rating || 
+                                                 _isAscending) 
+                                              ? AppColors.primaryOrange 
+                                              : AppColors.textSecondary,
                                         ),
+                                        tooltip: 'Filtros avanzados',
                                       ),
-                                    ),
+                                      if (_selectedCategory != 'Todo' || 
+                                          _searchQuery.isNotEmpty || 
+                                          _currentFilter != FilterType.all ||
+                                          _currentSort != SortType.rating ||
+                                          _isAscending)
+                                        TextButton(
+                                          onPressed: _clearFilters,
+                                          child: const Text(
+                                            'Limpiar',
+                                            style: TextStyle(
+                                              color: AppColors.primaryOrange,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
