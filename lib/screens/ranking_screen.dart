@@ -7,7 +7,9 @@ import 'professor_profile_screen.dart';
 
 /// Pantalla de ranking de profesores
 class RankingScreen extends StatefulWidget {
-  const RankingScreen({super.key});
+  final bool showBackButton;
+  
+  const RankingScreen({super.key, this.showBackButton = true});
 
   @override
   State<RankingScreen> createState() => _RankingScreenState();
@@ -57,37 +59,50 @@ class _RankingScreenState extends State<RankingScreen> {
                     // Fila con botón de retroceder y título
                     Row(
                       children: [
-                        // Botón de retroceder
-                        GestureDetector(
-                          onTap: () => Navigator.of(context).pop(),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.arrow_back_ios,
-                              color: AppColors.textLight,
-                              size: 20,
+                        // Botón de retroceder (solo si showBackButton es true)
+                        if (widget.showBackButton) ...[
+                          GestureDetector(
+                            onTap: () {
+                              // Verificar si se puede hacer pop, si no, navegar a main
+                              if (Navigator.canPop(context)) {
+                                Navigator.pop(context);
+                              } else {
+                                // Si no hay pantalla anterior, navegar a MainNavigationScreen
+                                Navigator.pushReplacementNamed(context, '/main');
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_ios,
+                                color: AppColors.textLight,
+                                size: 20,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
+                          const SizedBox(width: 16),
+                        ],
+                        
                         // Título centrado
-                        const Expanded(
+                        Expanded(
                           child: Text(
                             '🏆 Ranking de Profesores',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
+                            textAlign: widget.showBackButton ? TextAlign.center : TextAlign.left,
+                            style: const TextStyle(
                               color: AppColors.textLight,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        // Espacio vacío para mantener centrado el título
-                        const SizedBox(width: 44), // Ancho del botón + padding
+                        
+                        // Espacio vacío para mantener centrado el título (solo si hay botón)
+                        if (widget.showBackButton)
+                          const SizedBox(width: 44), // Ancho del botón + padding
                       ],
                     ),
                     const SizedBox(height: 16),

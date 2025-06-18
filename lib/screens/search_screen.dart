@@ -9,7 +9,9 @@ import 'professor_profile_screen.dart';
 
 /// Pantalla de búsqueda de profesores con filtros
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final bool showBackButton;
+  
+  const SearchScreen({super.key, this.showBackButton = true});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -118,47 +120,50 @@ class _SearchScreenState extends State<SearchScreen> {
                     // Fila con botón de retroceder y título
                     Row(
                       children: [
-                        // Botón de retroceder
-                        GestureDetector(
-                          onTap: () {
-                            // Navegar de vuelta usando Navigator.pop para mantener la pila de navegación
-                            if (Navigator.canPop(context)) {
-                              Navigator.pop(context);
-                            } else {
-                              // Si no hay una pantalla anterior, navegar a MainNavigationScreen
-                              Navigator.pushReplacementNamed(context, '/main');
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.arrow_back_ios,
-                              color: AppColors.textLight,
-                              size: 20,
+                        // Botón de retroceder (solo si showBackButton es true)
+                        if (widget.showBackButton) ...[
+                          GestureDetector(
+                            onTap: () {
+                              // Navegar de vuelta usando Navigator.pop para mantener la pila de navegación
+                              if (Navigator.canPop(context)) {
+                                Navigator.pop(context);
+                              } else {
+                                // Si no hay una pantalla anterior, navegar a MainNavigationScreen
+                                Navigator.pushReplacementNamed(context, '/main');
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_ios,
+                                color: AppColors.textLight,
+                                size: 20,
+                              ),
                             ),
                           ),
-                        ),
-                        
-                        const SizedBox(width: 16),
+                          const SizedBox(width: 16),
+                        ],
                         
                         // Título centrado
-                        const Expanded(
+                        Expanded(
                           child: Text(
                             'Buscar Profesores',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
+                            textAlign: widget.showBackButton ? TextAlign.center : TextAlign.left,
+                            style: const TextStyle(
                               color: AppColors.textLight,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        // Espacio vacío para mantener centrado el título
-                        const SizedBox(width: 44), // Ancho del botón + padding
+                        
+                        // Espacio vacío para mantener centrado el título (solo si hay botón)
+                        if (widget.showBackButton)
+                          const SizedBox(width: 44), // Ancho del botón + padding
                       ],
                     ),
                     

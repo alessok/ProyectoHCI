@@ -26,8 +26,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         });
       },
     ),
-    const SearchScreen(),
-    const RankingScreen(),
+    const SearchScreen(showBackButton: false), // Sin botón de retroceder en la pestaña
+    const RankingScreen(showBackButton: false), // Sin botón de retroceder en la pestaña
     const NotificationsScreen(),
     const ProfileScreen(),
   ];
