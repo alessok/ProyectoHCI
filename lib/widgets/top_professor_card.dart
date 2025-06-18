@@ -57,7 +57,7 @@ class TopProfessorCard extends StatelessWidget {
                 children: [
                   // Nombre del profesor
                   Text(
-                    professor.name,
+                    professor.formattedName,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

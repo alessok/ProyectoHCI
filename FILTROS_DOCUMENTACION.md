@@ -19,8 +19,8 @@ Servicio estático completo que proporciona:
 enum FilterType {
   all,           // Todos los profesores
   highRated,     // Mejor valorados (≥ 4.0)
-  popular,       // Populares (≥ 50 reseñas)
-  newProfessors, // Nuevos profesores (< 10 reseñas)
+  popular,       // Populares (≥ 30 reseñas)
+  newProfessors, // Nuevos profesores (< 15 reseñas)
 }
 ```
 
@@ -112,8 +112,8 @@ List<Professor> _getFilteredProfessors(List<Professor> professors) {
 
 1. **📋 Todos** - Sin filtros (por defecto)
 2. **⭐ Mejor valorados** - Profesores con rating ≥ 4.0
-3. **🔥 Populares** - Profesores con ≥ 50 reseñas
-4. **🆕 Nuevos profesores** - Profesores con < 10 reseñas
+3. **🔥 Populares** - Profesores con ≥ 30 reseñas
+4. **🆕 Nuevos profesores** - Profesores con < 15 reseñas
 
 ### **📊 Ordenamientos Disponibles**
 

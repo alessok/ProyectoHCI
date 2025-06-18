@@ -19,6 +19,33 @@ class Professor {
     this.totalReviews = 0,
     this.bio,
   });
+  
+  /// Retorna el nombre formateado con nombres primero y apellidos después
+  String get formattedName {
+    // Verificar si el nombre está en formato "Apellidos Nombres"
+    final parts = name.split(' ');
+    
+    // Si tiene menos de 3 partes, probablemente es un formato simple
+    if (parts.length < 3) return name;
+    
+    // Analizamos el nombre en el formato peruano común: "Apellido1 Apellido2 Nombre1 Nombre2..."
+    // Donde los primeros dos elementos son apellidos
+    String apellidos = '';
+    String nombres = '';
+    
+    // Para profesores con formato "Apellido1 Apellido2 Nombre1 Nombre2..."
+    if (parts.length >= 3) {
+      // Los dos primeros son apellidos
+      apellidos = parts.take(2).join(' ');
+      // El resto son nombres
+      nombres = parts.skip(2).join(' ');
+      
+      // Invertimos el orden: primero nombres y luego apellidos
+      return '$nombres $apellidos';
+    }
+    
+    return name; // Fallback al nombre original si algo falla
+  }
 
   /// Crear Professor desde JSON
   factory Professor.fromJson(Map<String, dynamic> json) {

@@ -6,8 +6,8 @@ import '../constants/colors.dart';
 enum FilterType {
   all,           // Todos los profesores
   highRated,     // Mejor valorados (≥ 4.0)
-  popular,       // Populares (≥ 50 reseñas)
-  newProfessors, // Nuevos profesores (< 10 reseñas)
+  popular,       // Populares (≥ 30 reseñas)
+  newProfessors, // Nuevos profesores (< 15 reseñas)
 }
 
 /// Tipos de ordenamiento disponibles
@@ -28,13 +28,16 @@ class FilterService {
         return professors;
       
       case FilterType.highRated:
+        // Mejoramos el filtro para que sea más preciso
         return professors.where((prof) => prof.averageRating >= 4.0).toList();
       
       case FilterType.popular:
-        return professors.where((prof) => prof.totalReviews >= 50).toList();
+        // Actualizamos el umbral para profesores populares
+        return professors.where((prof) => prof.totalReviews >= 30).toList();
       
       case FilterType.newProfessors:
-        return professors.where((prof) => prof.totalReviews < 10).toList();
+        // Ajustamos el criterio para profesores nuevos
+        return professors.where((prof) => prof.totalReviews < 15).toList();
     }
   }
 
@@ -61,8 +64,8 @@ class FilterService {
 
       case SortType.name:
         sortedList.sort((a, b) => ascending 
-          ? a.name.compareTo(b.name)
-          : b.name.compareTo(a.name));
+          ? a.formattedName.compareTo(b.formattedName)
+          : b.formattedName.compareTo(a.formattedName));
         break;
 
       case SortType.department:
@@ -88,11 +91,11 @@ class FilterService {
       case FilterType.all:
         return 'Todos';
       case FilterType.highRated:
-        return 'Mejor valorados';
+        return 'Mejor valorados (≥4.0)';
       case FilterType.popular:
-        return 'Populares';
+        return 'Populares (≥30 reseñas)';
       case FilterType.newProfessors:
-        return 'Nuevos profesores';
+        return 'Nuevos profesores (<15 reseñas)';
     }
   }
 

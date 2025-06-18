@@ -33,9 +33,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   final List<String> _categories = [
     'Todo',
-    'Ing. Sistemas',
-    'Ing. Industrial',
-    'Ing. Civil',
+    'Ingeniería de Sistemas',
+    'Ingeniería Industrial',
+    'Ingeniería Civil',
     'Arquitectura',
     'Comunicación',
     'Derecho',
@@ -75,6 +75,7 @@ class _SearchScreenState extends State<SearchScreen> {
     if (category == 'Todo') {
       provider.loadProfessorsByCategory('All');
     } else {
+      // Usamos el mismo nombre de categoría que está en UI y datos
       provider.loadProfessorsByCategory(category);
     }
   }

@@ -162,7 +162,7 @@ class _ProfessorProfileScreenState extends State<ProfessorProfileScreen> {
                             
                             // Nombre del profesor
                             Text(
-                              widget.professor.name,
+                              widget.professor.formattedName,
                               style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,

@@ -11,8 +11,8 @@ Se ha implementado exitosamente el **Sistema de Filtros y Ordenamientos Avanzado
 ### ✅ **FilterService completo con 4 tipos de filtros**
 - [x] `FilterType.all` - Todos los profesores
 - [x] `FilterType.highRated` - Mejor valorados (≥ 4.0)
-- [x] `FilterType.popular` - Populares (≥ 50 reseñas)  
-- [x] `FilterType.newProfessors` - Nuevos profesores (< 10 reseñas)
+- [x] `FilterType.popular` - Populares (≥ 30 reseñas)  
+- [x] `FilterType.newProfessors` - Nuevos profesores (< 15 reseñas)
 
 ### ✅ **5 opciones de ordenamiento (ascendente/descendente)**
 - [x] `SortType.rating` - Por calificación promedio
@@ -91,7 +91,7 @@ showModalBottomSheet(
 
 3. **Encontrar Profesores Populares**
    - Filtrar por "Populares" → Ordenar por "Número de reseñas descendente"
-   - Resultado: Profesores más comentados y experimentados
+   - Resultado: Profesores con 30+ reseñas, ordenados por popularidad
 
 ### **👨‍💻 Para el Desarrollador**
 

@@ -52,7 +52,7 @@ class OptimizedProfessorCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _OptimizedText(
-                    professor.name,
+                    professor.formattedName,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class OptimizedProfessorCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _OptimizedText(
-                    professor.name,
+                    professor.formattedName,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -147,7 +147,7 @@ class OptimizedProfessorCard extends StatelessWidget {
           : null,
       child: professor.photoUrl == null
           ? Text(
-              _getInitials(professor.name),
+              _getInitials(professor.formattedName),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: size * 0.4,
@@ -237,7 +237,9 @@ class OptimizedProfessorCard extends StatelessWidget {
   }
 
   String _getInitials(String name) {
-    final words = name.split(' ');
+    // Usar el nombre formateado para obtener las iniciales
+    final formattedName = professor.formattedName;
+    final words = formattedName.split(' ');
     if (words.length >= 2) {
       return '${words[0][0]}${words[1][0]}'.toUpperCase();
     } else if (words.isNotEmpty) {

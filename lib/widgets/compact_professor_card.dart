@@ -59,7 +59,7 @@ class CompactProfessorCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    professor.name,
+                    professor.formattedName,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,

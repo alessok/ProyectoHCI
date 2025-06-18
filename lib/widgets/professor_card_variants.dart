@@ -69,7 +69,7 @@ class ProfessorListCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    professor.name,
+                    professor.formattedName,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -211,7 +211,7 @@ class ProfessorGridCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      professor.name,
+                      professor.formattedName,
                       style: TextStyle(
                         fontSize: compact ? 12 : 14,
                         fontWeight: FontWeight.bold,

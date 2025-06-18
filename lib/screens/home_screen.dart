@@ -144,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Consumer<ProfessorProvider>(
                 builder: (context, provider, child) {
-                  final categories = ['All', 'Ing. Sistemas', 'Ing. Industrial', 'Ing. Civil', 'Arquitectura', 'Comunicación', 'Derecho'];
+                  final categories = ['All', 'Ingeniería de Sistemas', 'Ingeniería Industrial', 'Ingeniería Civil', 'Arquitectura', 'Comunicación', 'Derecho'];
                   final favoriteProfessors = provider.favoriteProfessors.take(4).toList();
                   final topProfessors = provider.topProfessors.take(3).toList();
                   

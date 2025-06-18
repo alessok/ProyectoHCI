@@ -177,7 +177,7 @@ class _RateProfessorScreenState extends State<RateProfessorScreen> {
                               
                               // Nombre del profesor
                               Text(
-                                widget.professor.name,
+                                widget.professor.formattedName,
                                 style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
