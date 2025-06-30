@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 /// Modelo para representar un usuario de la aplicación
-class User {
+class UserModel {
   final String id;
   final String name;
   final String email;
@@ -7,7 +9,7 @@ class User {
   final DateTime createdAt;
   final bool isVerified;
 
-  User({
+  UserModel({
     required this.id,
     required this.name,
     required this.email,
@@ -16,9 +18,22 @@ class User {
     this.isVerified = false,
   });
 
+  /// Crear User desde Firestore DocumentSnapshot
+  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return UserModel(
+      id: doc.id,
+      name: data['name'] ?? '',
+      email: data['email'] ?? '',
+      photoUrl: data['photoUrl'],
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      isVerified: data['isVerified'] ?? false,
+    );
+  }
+
   /// Crear User desde JSON
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       email: json['email'] ?? '',
@@ -40,8 +55,19 @@ class User {
     };
   }
 
+  /// Convertir User a Firestore Map
+  Map<String, dynamic> toFirestore() {
+    return {
+      'name': name,
+      'email': email,
+      'photoUrl': photoUrl,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'isVerified': isVerified,
+    };
+  }
+
   /// Crear copia del usuario con campos modificados
-  User copyWith({
+  UserModel copyWith({
     String? id,
     String? name,
     String? email,
@@ -49,7 +75,7 @@ class User {
     DateTime? createdAt,
     bool? isVerified,
   }) {
-    return User(
+    return UserModel(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -58,4 +84,19 @@ class User {
       isVerified: isVerified ?? this.isVerified,
     );
   }
+
+  @override
+  String toString() {
+    return 'UserModel{id: $id, name: $name, email: $email, isVerified: $isVerified}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }

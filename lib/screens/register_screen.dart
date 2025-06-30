@@ -3,6 +3,8 @@ import '../constants/colors.dart';
 import '../constants/strings.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../services/auth_service.dart';
+import '../services/logger_service.dart';
 
 /// Pantalla de registro para nuevos usuarios
 class RegisterScreen extends StatefulWidget {
@@ -14,6 +16,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -23,6 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -30,33 +34,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   /// Manejar registro de usuario
-  Future<void> _handleRegister() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
     setState(() {
       _isLoading = true;
     });
 
     try {
-      // TODO: Implementar lógica de registro
-      await Future.delayed(const Duration(seconds: 2)); // Simulación
-      
+      final credential = await AuthService.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        name: _nameController.text.trim(),
+      );
+
+      if (credential.user == null) {
+        throw Exception('No se pudo crear el usuario. Intenta nuevamente.');
+      }
+
       if (mounted) {
-        // Mostrar mensaje de éxito y navegar a login
+        LoggerService.info('Usuario registrado exitosamente: \\${credential.user?.email}');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Cuenta creada exitosamente'),
-            backgroundColor: AppColors.success,
+            content: Text('Cuenta creada exitosamente. Inicia sesión para continuar.'),
+            backgroundColor: Colors.green,
           ),
         );
-        Navigator.of(context).pop(); // Regresar a login
+        Navigator.pushReplacementNamed(context, '/login');
       }
     } catch (e) {
       if (mounted) {
+        LoggerService.error('Error en registro: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error al crear la cuenta'),
-            backgroundColor: AppColors.error,
+          SnackBar(
+            content: Text('Error al registrar: ${e is Exception ? e.toString().replaceFirst("Exception:", "").trim() : e}'),
+            backgroundColor: Colors.red,
           ),
         );
       }
@@ -145,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         // Título
                         const Text(
-                          'Registrate',
+                          'Regístrate',
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -158,7 +172,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         // Subtítulo
                         const Text(
-                          'No olvides que tu actividad será anónima!',
+                          'Tu actividad será anónima',
                           style: TextStyle(
                             fontSize: 16,
                             color: AppColors.textSecondary,
@@ -167,6 +181,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         
                         const SizedBox(height: 32),
+                        
+                        // Campo de nombre
+                        CustomTextField(
+                          controller: _nameController,
+                          hintText: 'Nombre completo',
+                          keyboardType: TextInputType.name,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'El nombre es requerido';
+                            }
+                            if (value.trim().length < 2) {
+                              return 'El nombre debe tener al menos 2 caracteres';
+                            }
+                            return null;
+                          },
+                        ),
+                        
+                        const SizedBox(height: 16),
                         
                         // Campo de correo institucional
                         CustomTextField(
@@ -181,8 +213,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return AppStrings.emailInvalid;
                             }
                             // Validar que sea correo institucional de Ulima
-                            if (!value.toLowerCase().contains('ulima')) {
-                              return 'Debe ser un correo institucional de Ulima';
+                            final email = value.toLowerCase();
+                            if (!email.contains('@aloe.ulima.edu.pe') && 
+                                !email.contains('@ulima.edu.pe')) {
+                              return 'Debe ser un correo institucional de Ulima (@aloe.ulima.edu.pe o @ulima.edu.pe)';
                             }
                             return null;
                           },
@@ -197,7 +231,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           obscureText: !_isPasswordVisible,
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
                               color: AppColors.mediumGray,
                             ),
                             onPressed: () {
@@ -211,7 +245,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return AppStrings.fieldRequired;
                             }
                             if (value.length < 6) {
-                              return AppStrings.passwordShort;
+                              return 'La contraseña debe tener al menos 6 caracteres';
                             }
                             return null;
                           },
@@ -219,14 +253,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        // Campo de repetir contraseña
+                        // Campo de confirmar contraseña
                         CustomTextField(
                           controller: _confirmPasswordController,
-                          hintText: 'Repetir contraseña',
+                          hintText: 'Confirmar contraseña',
                           obscureText: !_isConfirmPasswordVisible,
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              _isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
                               color: AppColors.mediumGray,
                             ),
                             onPressed: () {
@@ -240,50 +274,57 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return AppStrings.fieldRequired;
                             }
                             if (value != _passwordController.text) {
-                              return AppStrings.passwordMismatch;
+                              return 'Las contraseñas no coinciden';
                             }
                             return null;
                           },
                         ),
                         
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 24),
                         
-                        // Botón de registrarse
+                        // Botón de registro
                         CustomButton(
-                          text: 'Registrarse',
-                          onPressed: _isLoading ? null : _handleRegister,
+                          onPressed: _isLoading ? null : _register,
+                          text: _isLoading ? 'Creando cuenta...' : 'Registrarse',
                           isLoading: _isLoading,
+                        ),
+                        
+                        const SizedBox(height: 24),
+                        
+                        // Enlace para iniciar sesión
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Flexible(
+                              child: Text(
+                                '¿Ya tienes cuenta? ',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 14,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Flexible(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text(
+                                  'Inicia sesión aquí',
+                                  style: TextStyle(
+                                    color: AppColors.primaryOrange,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  
-                  const SizedBox(height: 32),
-                  
-                  // Link de inicio de sesión
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        '¿Ya tienes una cuenta?',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          'Inicia sesión',
-                          style: TextStyle(
-                            color: AppColors.primaryOrange,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),

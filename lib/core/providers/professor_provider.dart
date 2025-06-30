@@ -177,6 +177,14 @@ class ProfessorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> isFavoriteProfessor(String professorId) async {
+    return await _repository.isFavoriteProfessor(professorId);
+  }
+
+  Future<void> toggleFavoriteProfessor(String professorId) async {
+    await _repository.toggleFavoriteProfessor(professorId);
+  }
+
   @override
   void dispose() {
     _categoryCache.clear();

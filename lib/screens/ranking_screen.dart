@@ -39,6 +39,11 @@ class _RankingScreenState extends State<RankingScreen> {
     return sortedList.take(15).toList();
   }
 
+  void _reloadRanking() {
+    final provider = Provider.of<ProfessorProvider>(context, listen: false);
+    provider.loadProfessorsByCategory('All');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -232,8 +237,8 @@ class _RankingScreenState extends State<RankingScreen> {
                         child: RankingProfessorCard(
                           professor: professor,
                           position: index + 1,
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ProfessorProfileScreen(
@@ -241,6 +246,9 @@ class _RankingScreenState extends State<RankingScreen> {
                                 ),
                               ),
                             );
+                            if (result == true) {
+                              _reloadRanking();
+                            }
                           },
                         ),
                       );

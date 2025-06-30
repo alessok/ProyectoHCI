@@ -2924,32 +2924,47 @@ class MockDataService {
     ),
   ];
 
-  // Comentarios y reseñas de profesores de Ingeniería de Sistemas
+  // Reseñas mock por profesor
   static final Map<String, List<Review>> _reviews = {
-    '68': [ // Quintana Cruz Hernán Alejandro - Prog. Web, Proy. de Videojuegos
+    '68': [ // Córdova Rojas José Luis - Programación Web, Videojuegos
       Review(
         id: 'r1',
         userId: 'u1',
         userName: 'Juan Pérez',
-        rating: 5,
+        userEmail: 'juan.perez@ulima.edu.pe',
+        professorId: '68',
+        rating: 5.0,
         comment: 'Excelente profesor de programación web. Sus clases son muy dinámicas y siempre está al día con las últimas tecnologías. Los proyectos de videojuegos son increíbles.',
-        date: DateTime.now().subtract(const Duration(hours: 1)),
+        course: 'Programación Web',
+        semester: '2024-1',
+        createdAt: DateTime.now().subtract(const Duration(hours: 1)),
+        updatedAt: DateTime.now().subtract(const Duration(hours: 1)),
       ),
       Review(
         id: 'r2',
         userId: 'u2',
         userName: 'María González',
-        rating: 5,
+        userEmail: 'maria.gonzalez@ulima.edu.pe',
+        professorId: '68',
+        rating: 5.0,
         comment: 'El mejor profesor para aprender desarrollo web. Sus explicaciones son claras y los proyectos muy divertidos.',
-        date: DateTime.now().subtract(const Duration(days: 2)),
+        course: 'Videojuegos',
+        semester: '2024-1',
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 2)),
       ),
       Review(
         id: 'r3',
         userId: 'u3',
         userName: 'Carlos Ruiz',
-        rating: 4,
+        userEmail: 'carlos.ruiz@ulima.edu.pe',
+        professorId: '68',
+        rating: 4.0,
         comment: 'Muy buen profesor, aunque a veces los proyectos son exigentes. Vale la pena el esfuerzo por todo lo que se aprende.',
-        date: DateTime.now().subtract(const Duration(days: 5)),
+        course: 'Programación Web',
+        semester: '2023-2',
+        createdAt: DateTime.now().subtract(const Duration(days: 5)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 5)),
       ),
     ],
     '23': [ // Dios Luna Jim Bryan - Sist. Operativos, Deep Learning
@@ -2957,17 +2972,27 @@ class MockDataService {
         id: 'r4',
         userId: 'u1',
         userName: 'Ana Torres',
-        rating: 5,
+        userEmail: 'ana.torres@ulima.edu.pe',
+        professorId: '23',
+        rating: 5.0,
         comment: 'Increíble profesor de Deep Learning. Logra hacer entendibles conceptos muy complejos. Sus clases de sistemas operativos también son excelentes.',
-        date: DateTime.now().subtract(const Duration(days: 3)),
+        course: 'Deep Learning',
+        semester: '2024-1',
+        createdAt: DateTime.now().subtract(const Duration(days: 3)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 3)),
       ),
       Review(
         id: 'r5',
         userId: 'u2',
         userName: 'Luis Mendoza',
-        rating: 5,
+        userEmail: 'luis.mendoza@ulima.edu.pe',
+        professorId: '23',
+        rating: 5.0,
         comment: 'El mejor profesor de IA que he tenido. Sus explicaciones son súper claras y los proyectos muy actuales.',
-        date: DateTime.now().subtract(const Duration(days: 8)),
+        course: 'Sistemas Operativos',
+        semester: '2023-2',
+        createdAt: DateTime.now().subtract(const Duration(days: 8)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 8)),
       ),
     ],
     '84': [ // Sánchez Tenorio Juana Viviana - Machine Learning
@@ -2975,9 +3000,14 @@ class MockDataService {
         id: 'r6',
         userId: 'u4',
         userName: 'Sandra Morales',
-        rating: 5,
+        userEmail: 'sandra.morales@ulima.edu.pe',
+        professorId: '84',
+        rating: 5.0,
         comment: 'Excelente profesora de Machine Learning. Sus clases son muy bien estructuradas y siempre con ejemplos prácticos.',
-        date: DateTime.now().subtract(const Duration(days: 12)),
+        course: 'Machine Learning',
+        semester: '2024-1',
+        createdAt: DateTime.now().subtract(const Duration(days: 12)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 12)),
       ),
     ],
     '98': [ // Wong Urquiza Henry Joe - Ing. de Software I, DevOps
@@ -2985,17 +3015,27 @@ class MockDataService {
         id: 'r7',
         userId: 'u1',
         userName: 'Diego Fernández',
-        rating: 5,
+        userEmail: 'diego.fernandez@ulima.edu.pe',
+        professorId: '98',
+        rating: 5.0,
         comment: 'Excelente profesor de DevOps. Sus clases son muy actualizadas y relevantes para la industria.',
-        date: DateTime.now().subtract(const Duration(days: 1)),
+        course: 'DevOps',
+        semester: '2024-1',
+        createdAt: DateTime.now().subtract(const Duration(days: 1)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 1)),
       ),
       Review(
         id: 'r8',
         userId: 'u3',
         userName: 'Elena Vásquez',
-        rating: 4,
+        userEmail: 'elena.vasquez@ulima.edu.pe',
+        professorId: '98',
+        rating: 4.0,
         comment: 'Muy buen profesor de ingeniería de software. Sus metodologías son muy efectivas.',
-        date: DateTime.now().subtract(const Duration(days: 4)),
+        course: 'Ingeniería de Software I',
+        semester: '2023-2',
+        createdAt: DateTime.now().subtract(const Duration(days: 4)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 4)),
       ),
     ],
     '90': [ // Tarazona Vargas Enver Gerald - Ana. Big Data, Estadística Aplicada
@@ -3003,17 +3043,27 @@ class MockDataService {
         id: 'r9',
         userId: 'u2',
         userName: 'Roberto Chang',
-        rating: 5,
+        userEmail: 'roberto.chang@ulima.edu.pe',
+        professorId: '90',
+        rating: 5.0,
         comment: 'Sus clases de Big Data son fascinantes. Combina teoría con práctica de manera perfecta.',
-        date: DateTime.now().subtract(const Duration(hours: 6)),
+        course: 'Análisis de Big Data',
+        semester: '2024-1',
+        createdAt: DateTime.now().subtract(const Duration(hours: 6)),
+        updatedAt: DateTime.now().subtract(const Duration(hours: 6)),
       ),
       Review(
         id: 'r10',
         userId: 'u5',
         userName: 'Carla Jiménez',
-        rating: 4,
+        userEmail: 'carla.jimenez@ulima.edu.pe',
+        professorId: '90',
+        rating: 4.0,
         comment: 'Muy buen profesor de estadística, aunque los temas son complejos. Vale la pena el esfuerzo.',
-        date: DateTime.now().subtract(const Duration(days: 7)),
+        course: 'Estadística Aplicada',
+        semester: '2023-2',
+        createdAt: DateTime.now().subtract(const Duration(days: 7)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 7)),
       ),
     ],
     '25': [ // Fernández Del Pomar Marco Antonio - Transformac. Digital
@@ -3021,48 +3071,58 @@ class MockDataService {
         id: 'r11',
         userId: 'u1',
         userName: 'Fernando Ruiz',
-        rating: 5,
+        userEmail: 'fernando.ruiz@ulima.edu.pe',
+        professorId: '25',
+        rating: 5.0,
         comment: 'Excelente profesor de transformación digital. Sus clases son muy inspiradoras y actuales.',
-        date: DateTime.now().subtract(const Duration(days: 2)),
+        course: 'Transformación Digital',
+        semester: '2024-1',
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 2)),
       ),
       Review(
         id: 'r12',
         userId: 'u3',
         userName: 'Patricia Luna',
-        rating: 4,
+        userEmail: 'patricia.luna@ulima.edu.pe',
+        professorId: '25',
+        rating: 4.0,
         comment: 'Muy buen profesor, aunque a veces es muy exigente con los proyectos.',
-        date: DateTime.now().subtract(const Duration(days: 9)),
+        course: 'Transformación Digital',
+        semester: '2023-2',
+        createdAt: DateTime.now().subtract(const Duration(days: 9)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 9)),
       ),
     ],
   };
 
   // Usuarios ficticios
-  static final List<User> _users = [
-    User(
+  static final List<UserModel> _users = [
+    UserModel(
       id: 'u1',
       name: 'Juan Pérez',
       email: 'juan.perez@ulima.edu.pe',
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
     ),
-    User(
+    UserModel(
       id: 'u2',
       name: 'María González',
       email: 'maria.gonzalez@ulima.edu.pe',
       createdAt: DateTime.now().subtract(const Duration(days: 45)),
     ),
-    User(
+    UserModel(
       id: 'u3',
       name: 'Carlos Ruiz',
       email: 'carlos.ruiz@ulima.edu.pe',
       createdAt: DateTime.now().subtract(const Duration(days: 60)),
     ),
-    User(
+    UserModel(
       id: 'u4',
       name: 'Sandra Morales',
       email: 'sandra.morales@ulima.edu.pe',
       createdAt: DateTime.now().subtract(const Duration(days: 20)),
     ),
-    User(
+    UserModel(
       id: 'u5',
       name: 'Diego Fernández',
       email: 'diego.fernandez@ulima.edu.pe',
@@ -3071,7 +3131,7 @@ class MockDataService {
   ];
 
   /// Obtiene todos los usuarios
-  static List<User> getAllUsers() {
+  static List<UserModel> getAllUsers() {
     return List.from(_users);
   }
 
@@ -3128,9 +3188,13 @@ class MockDataService {
       'id': review.id,
       'userId': review.userId,
       'userName': review.userName,
+      'userEmail': review.userEmail,
       'rating': review.rating,
       'comment': review.comment,
-      'date': review.date,
+      'course': review.course,
+      'semester': review.semester,
+      'createdAt': review.createdAt,
+      'updatedAt': review.updatedAt,
     }).toList();
   }
 
@@ -3142,7 +3206,7 @@ class MockDataService {
     };
     
     for (final review in reviews) {
-      distribution[review.rating] = (distribution[review.rating] ?? 0) + 1;
+      distribution[review.ratingAsInt] = (distribution[review.ratingAsInt] ?? 0) + 1;
     }
     
     // Para Quintana Cruz Hernán Alejandro (id: '68'), generar distribución realista basada en 145 reviews
@@ -3181,7 +3245,7 @@ class MockDataService {
   }
 
   /// Obtiene usuario actual (simulado)
-  static User getCurrentUser() {
+  static UserModel getCurrentUser() {
     return _users.first;
   }
 
@@ -3190,16 +3254,23 @@ class MockDataService {
     required String professorId,
     required String userId,
     required String userName,
-    required int rating,
+    required double rating,
     required String comment,
+    required String course,
+    String? semester,
   }) {
     final newReview = Review(
       id: 'review_${DateTime.now().millisecondsSinceEpoch}',
       userId: userId,
       userName: userName,
+      userEmail: 'user@ulima.edu.pe',
+      professorId: professorId,
       rating: rating,
       comment: comment,
-      date: DateTime.now(),
+      course: course,
+      semester: semester ?? '',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
 
     if (_reviews[professorId] == null) {
@@ -3212,7 +3283,7 @@ class MockDataService {
     if (professorIndex != -1) {
       final professor = _professors[professorIndex];
       final allReviews = _reviews[professorId]!;
-      final totalRating = allReviews.fold(0, (sum, review) => sum + review.rating);
+      final totalRating = allReviews.fold(0.0, (sum, review) => sum + review.rating);
       final newAverage = totalRating / allReviews.length;
       
       _professors[professorIndex] = Professor(

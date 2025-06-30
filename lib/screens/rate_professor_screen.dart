@@ -65,8 +65,9 @@ class _RateProfessorScreenState extends State<RateProfessorScreen> {
       professorId: widget.professor.id,
       userId: currentUser.id,
       userName: currentUser.name,
-      rating: averageRating.round(),
+      rating: averageRating.toDouble(),
       comment: fullComment.isEmpty ? 'Sin comentarios adicionales.' : fullComment,
+      course: widget.professor.courses.isNotEmpty ? widget.professor.courses.first : 'Curso General',
     );
 
     // Navegar a la pantalla de confirmación

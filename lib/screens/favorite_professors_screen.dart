@@ -14,6 +14,11 @@ class FavoriteProfessorsScreen extends StatefulWidget {
 }
 
 class _FavoriteProfessorsScreenState extends State<FavoriteProfessorsScreen> {
+  void _reloadFavorites() {
+    final provider = Provider.of<ProfessorProvider>(context, listen: false);
+    provider.loadProfessorsByCategory('All');
+  }
+
   @override
   void initState() {
     super.initState();
@@ -166,8 +171,8 @@ class _FavoriteProfessorsScreenState extends State<FavoriteProfessorsScreen> {
                               final professor = favoriteProfessors[index];
                               return ProfessorGridCard(
                                 professor: professor,
-                                onTap: () {
-                                  Navigator.push(
+                                onTap: () async {
+                                  final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ProfessorProfileScreen(
@@ -175,6 +180,9 @@ class _FavoriteProfessorsScreenState extends State<FavoriteProfessorsScreen> {
                                       ),
                                     ),
                                   );
+                                  if (result == true) {
+                                    _reloadFavorites();
+                                  }
                                 },
                               );
                             },

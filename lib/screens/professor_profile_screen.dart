@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants/colors.dart';
 import '../models/professor.dart';
-import '../services/mock_data_service.dart';
 import 'rate_professor_screen.dart';
+import '../core/providers/professor_provider.dart';
 
 /// Pantalla de perfil detallado del profesor
 class ProfessorProfileScreen extends StatefulWidget {
@@ -19,8 +20,8 @@ class ProfessorProfileScreen extends StatefulWidget {
 
 class _ProfessorProfileScreenState extends State<ProfessorProfileScreen> {
   bool _isFavorite = false;
-  List<Map<String, dynamic>> _reviews = [];
-  Map<int, int> _ratingDistribution = {};
+  final List<Map<String, dynamic>> _reviews = [];
+  final Map<int, int> _ratingDistribution = {};
 
   @override
   void initState() {
@@ -28,27 +29,33 @@ class _ProfessorProfileScreenState extends State<ProfessorProfileScreen> {
     _loadProfessorData();
   }
 
-  void _loadProfessorData() {
+  void _loadProfessorData() async {
+    final provider = Provider.of<ProfessorProvider>(context, listen: false);
+    final isFav = await provider.isFavoriteProfessor(widget.professor.id);
     setState(() {
-      _reviews = MockDataService.getReviewsForProfessor(widget.professor.id);
-      _ratingDistribution = MockDataService.getRatingDistribution(widget.professor.id);
-      _isFavorite = MockDataService.isFavoriteProfessor(widget.professor.id);
+      _isFavorite = isFav;
     });
+    // ... puedes cargar reviews reales aquí si lo deseas ...
   }
 
-  void _toggleFavorite() {
+  void _toggleFavorite() async {
     setState(() {
       _isFavorite = !_isFavorite;
     });
-    // TODO: Guardar en base de datos
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(_isFavorite 
-          ? 'Profesor agregado a favoritos' 
-          : 'Profesor removido de favoritos'),
-        backgroundColor: AppColors.primaryOrange,
-      ),
-    );
+    final provider = Provider.of<ProfessorProvider>(context, listen: false);
+    await provider.toggleFavoriteProfessor(widget.professor.id);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_isFavorite 
+            ? 'Profesor agregado a favoritos' 
+            : 'Profesor removido de favoritos'),
+          backgroundColor: AppColors.primaryOrange,
+        ),
+      );
+      // Notificar al volver que hubo cambio
+      Navigator.pop(context, true);
+    }
   }
 
   void _openRatingDialog() {
@@ -59,7 +66,7 @@ class _ProfessorProfileScreenState extends State<ProfessorProfileScreen> {
       ),
     ).then((result) {
       // Si se envió una evaluación, recargar los datos
-      if (result == true) {
+      if (result == true && mounted) {
         _loadProfessorData();
       }
     });

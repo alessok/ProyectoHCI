@@ -50,6 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
     provider.changeCategory(category);
   }
 
+  void _reloadCategory() {
+    final provider = Provider.of<ProfessorProvider>(context, listen: false);
+    provider.loadProfessorsByCategory(_selectedCategory);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -223,8 +228,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 padding: const EdgeInsets.only(right: 12.0),
                                 child: CompactProfessorCard(
                                   professor: professor,
-                                  onTap: () {
-                                    Navigator.push(
+                                  onTap: () async {
+                                    final result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ProfessorProfileScreen(
@@ -232,6 +237,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                     );
+                                    if (result == true) {
+                                      _reloadCategory();
+                                    }
                                   },
                                 ),
                               );
@@ -280,8 +288,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.only(bottom: 12.0),
                           child: ProfessorListCard(
                             professor: professor,
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ProfessorProfileScreen(
@@ -289,6 +297,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               );
+                              if (result == true) {
+                                _reloadCategory();
+                              }
                             },
                           ),
                         )),

@@ -3,8 +3,7 @@ import '../constants/colors.dart';
 import '../constants/strings.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
-import '../services/session_service.dart';
-import 'register_screen.dart';
+import '../services/auth_service.dart';
 
 /// Pantalla de inicio de sesión con diseño de la Universidad de Lima
 class LoginScreen extends StatefulWidget {
@@ -29,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  /// Manejar inicio de sesión
+  /// Manejar inicio de sesión con email y contraseña
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -38,30 +37,20 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      // Simular login y establecer usuario en sesión
-      final user = SessionService.loginWithEmail(_emailController.text);
-      
-      await Future.delayed(const Duration(seconds: 2)); // Simulación
+      await AuthService.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
       
       if (mounted) {
-        if (user != null) {
-          // Navegar a pantalla principal con navegación
-          Navigator.of(context).pushReplacementNamed('/main');
-        } else {
-          // Email no encontrado
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Usuario no encontrado'),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        }
+        // Navegar a pantalla principal
+        Navigator.of(context).pushReplacementNamed('/main');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(AppStrings.loginError),
+          SnackBar(
+            content: Text(e.toString()),
             backgroundColor: AppColors.error,
           ),
         );
@@ -75,20 +64,21 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  /// Manejar login con Google
-  Future<void> _handleGoogleLogin() async {
+  /// Manejar inicio de sesión con Google
+  Future<void> _handleGoogleSignIn() async {
     setState(() {
       _isLoading = true;
     });
-
     try {
-      // TODO: Implementar Google Sign-In
-      await Future.delayed(const Duration(seconds: 2)); // Simulación
+      await AuthService.signInWithGoogle();
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/main');
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(AppStrings.loginError),
+          SnackBar(
+            content: Text(e.toString()),
             backgroundColor: AppColors.error,
           ),
         );
@@ -205,7 +195,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: !_isPasswordVisible,
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              _isPasswordVisible 
+                                ? Icons.visibility_off 
+                                : Icons.visibility,
                               color: AppColors.mediumGray,
                             ),
                             onPressed: () {
@@ -219,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               return AppStrings.fieldRequired;
                             }
                             if (value.length < 6) {
-                              return AppStrings.passwordShort;
+                              return 'La contraseña debe tener al menos 6 caracteres';
                             }
                             return null;
                           },
@@ -227,40 +219,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        // Recordarme y olvidaste contraseña
+                        // Checkbox "Recordarme"
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _rememberMe = value ?? false;
-                                    });
-                                  },
-                                  activeColor: AppColors.primaryOrange,
-                                ),
-                                const Text(
-                                  AppStrings.rememberMe,
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Implementar recuperación de contraseña
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                });
                               },
-                              child: const Text(
-                                AppStrings.forgotPassword,
-                                style: TextStyle(
-                                  color: AppColors.primaryOrange,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                ),
+                              activeColor: AppColors.primaryOrange,
+                            ),
+                            const Text(
+                              'Recordarme',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 14,
                               ),
                             ),
                           ],
@@ -268,90 +243,83 @@ class _LoginScreenState extends State<LoginScreen> {
                         
                         const SizedBox(height: 24),
                         
-                        // Botón de ingresar
+                        // Botón de login
                         CustomButton(
-                          text: AppStrings.loginButton,
                           onPressed: _isLoading ? null : _handleLogin,
+                          text: _isLoading ? 'Iniciando sesión...' : AppStrings.loginButton,
                           isLoading: _isLoading,
                         ),
                         
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         
-                        // Divider con "O ingresa con"
-                        const Row(
+                        // Separador
+                        Row(
                           children: [
-                            Expanded(child: Divider()),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: AppColors.lightGray,
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
-                                AppStrings.orText,
+                                'o',
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
-                            Expanded(child: Divider()),
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: AppColors.lightGray,
+                              ),
+                            ),
                           ],
+                        ),
+                        
+                        const SizedBox(height: 16),
+                        
+                        // Botón de Google Sign-In (temporalmente deshabilitado)
+                        CustomButton(
+                          onPressed: _isLoading ? null : _handleGoogleSignIn,
+                          text: 'Continuar con Google',
+                          backgroundColor: Colors.white,
+                          textColor: AppColors.textPrimary,
                         ),
                         
                         const SizedBox(height: 24),
                         
-                        // Botón de Google
-                        OutlinedButton.icon(
-                          onPressed: _isLoading ? null : _handleGoogleLogin,
-                          icon: const Icon(
-                            Icons.g_mobiledata, // Usamos un ícono temporal hasta tener el de Google
-                            color: AppColors.primaryOrange,
-                          ),
-                          label: const Text(
-                            'Google',
-                            style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w500,
+                        // Enlace para registrarse
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              '¿No tienes cuenta? ',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            side: const BorderSide(color: AppColors.lightGray),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              child: const Text(
+                                'Regístrate aquí',
+                                style: TextStyle(
+                                  color: AppColors.primaryOrange,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  
-                  const SizedBox(height: 32),
-                  
-                  // Link de registro
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        AppStrings.noAccount,
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          AppStrings.registerLink,
-                          style: TextStyle(
-                            color: AppColors.primaryOrange,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -362,3 +330,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

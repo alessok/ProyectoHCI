@@ -45,7 +45,14 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
     }
 
     // Ordenar por fecha (más recientes primero)
-    userReviews.sort((a, b) => b['date'].compareTo(a['date']));
+    userReviews.sort((a, b) {
+      final aDate = a['date'];
+      final bDate = b['date'];
+      if (aDate == null && bDate == null) return 0;
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+      return bDate.compareTo(aDate);
+    });
     return userReviews;
   }
 
@@ -266,7 +273,15 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(dynamic date) {
+    if (date == null) {
+      return 'Fecha desconocida';
+    }
+    
+    if (date is! DateTime) {
+      return 'Fecha inválida';
+    }
+    
     final now = DateTime.now();
     final difference = now.difference(date);
     

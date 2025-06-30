@@ -80,6 +80,11 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  void _reloadCategory() {
+    final provider = Provider.of<ProfessorProvider>(context, listen: false);
+    provider.loadProfessorsByCategory(_selectedCategory);
+  }
+
   List<Professor> _getFilteredProfessors(List<Professor> professors) {
     var filteredList = professors.where((professor) {
       // Filtro por categoría
@@ -373,8 +378,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   padding: const EdgeInsets.only(bottom: 16.0),
                                                   child: ProfessorListCard(
                                                     professor: professor,
-                                                    onTap: () {
-                                                      Navigator.push(
+                                                    onTap: () async {
+                                                      final result = await Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) => ProfessorProfileScreen(
@@ -382,6 +387,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                           ),
                                                         ),
                                                       );
+                                                      if (result == true) {
+                                                        _reloadCategory();
+                                                      }
                                                     },
                                                     trailing: const Icon(
                                                       Icons.more_horiz,

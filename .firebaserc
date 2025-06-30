@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "professor-ranking-app-ulima"
-  }
+    "default": "professor-ranking-app-ulima",
+    "staging": "professor-ranking-app-ulima"
+  },
+  "targets": {},
+  "etags": {}
 }
