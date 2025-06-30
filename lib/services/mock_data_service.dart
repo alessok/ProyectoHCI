@@ -2926,7 +2926,7 @@ class MockDataService {
 
   // Reseñas mock por profesor
   static final Map<String, List<Review>> _reviews = {
-    '68': [ // Córdova Rojas José Luis - Programación Web, Videojuegos
+    '68': [ // Quintana Cruz Hernán Alejandro - Prog. Web, Proy. de Videojuegos
       Review(
         id: 'r1',
         userId: 'u1',
@@ -2948,7 +2948,7 @@ class MockDataService {
         professorId: '68',
         rating: 5.0,
         comment: 'El mejor profesor para aprender desarrollo web. Sus explicaciones son claras y los proyectos muy divertidos.',
-        course: 'Videojuegos',
+        course: 'Proyectos de Videojuegos',
         semester: '2024-1',
         createdAt: DateTime.now().subtract(const Duration(days: 2)),
         updatedAt: DateTime.now().subtract(const Duration(days: 2)),

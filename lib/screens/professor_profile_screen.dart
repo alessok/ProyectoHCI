@@ -4,6 +4,7 @@ import '../constants/colors.dart';
 import '../models/professor.dart';
 import 'rate_professor_screen.dart';
 import '../core/providers/professor_provider.dart';
+import '../services/mock_data_service.dart';
 
 /// Pantalla de perfil detallado del profesor
 class ProfessorProfileScreen extends StatefulWidget {
@@ -27,6 +28,12 @@ class _ProfessorProfileScreenState extends State<ProfessorProfileScreen> {
   void initState() {
     super.initState();
     _loadProfessorData();
+    // Cargar reseñas mock directamente al iniciar
+    final reviews = MockDataService.getReviewsForProfessor(widget.professor.id);
+    setState(() {
+      _reviews.clear();
+      _reviews.addAll(reviews);
+    });
   }
 
   void _loadProfessorData() async {
@@ -91,7 +98,7 @@ class _ProfessorProfileScreenState extends State<ProfessorProfileScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: Colors.white.withAlpha(51),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -337,34 +344,32 @@ class _ProfessorProfileScreenState extends State<ProfessorProfileScreen> {
                   
                   const SizedBox(height: 40),
                   
-                  // Reseñas
+                  // Mostrar reseñas si existen
                   if (_reviews.isNotEmpty) ...[
+                    const SizedBox(height: 32),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Text(
+                        'Reseñas de estudiantes',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _reviews.take(3).length,
+                      itemCount: _reviews.length,
                       itemBuilder: (context, index) {
                         final review = _reviews[index];
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 20.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                           child: _ReviewCard(review: review),
                         );
                       },
                     ),
-                    
-                    if (_reviews.length > 3)
-                      TextButton(
-                        onPressed: () {
-                          // TODO: Navegar a todas las reseñas
-                        },
-                        child: const Text(
-                          'Ver todas las reseñas',
-                          style: TextStyle(
-                            color: AppColors.primaryOrange,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
                   ],
                   
                   const SizedBox(height: 40),
