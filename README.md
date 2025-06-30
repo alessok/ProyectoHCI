@@ -76,7 +76,7 @@ El proyecto utiliza un sistema híbrido que combina:
 
 ## Autores
 
-- Alessandro Ledesma
+- Grupo 5
 - Universidad de Lima
 - Proyecto de HCI
 
